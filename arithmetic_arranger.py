@@ -1,135 +1,105 @@
 def arithmetic_arranger(problems, print_answers=False):
 
+    class Problem:
+        def __init__(self, problem_no, operand1, operator, operand2):
+            self.problem_no = problem_no
+            self.operand1 = operand1
+            self.operator = operator
+            self.operand2 = operand2
+            
+            if self.operator == '+':
+                self.result = int(self.operand1) + int(self.operand2)
+            else:
+                self.result = int(self.operand1) - int(self.operand2)
+                
+            self.problem_length = max(len(self.operand1), len(self.operand2)) + 2
+            self.line1_ws_len = self.problem_length - len(self.operand1)
+            self.line2_ws_len = self.problem_length - len(self.operand2) - 1
+            self.resultline_ws_len = self.problem_length - len(str(self.result))
+
     #check no more than 5 problems
     if len(problems) > 5:
         return "Error: Too many problems."
     
-    operand1_l = []
-    operator_l = []
-    operand2_l = []
+    problem_list = []
+    for i, problem in enumerate(problems):
+        operands = []
+        operands = problem.split('+')
+        operator = '+'
+        if len(operands) != 2:
+            operands = problem.split('-')
+            operator = '-'
+        if len(operands) != 2:
+            return "Error: Operator must be '+' or '-'."
+        #remove whitespace
+        operands = [operand.strip() for operand in operands]
+        #check operands only contain numbers and are no more than 4 digits
+        for operand in operands:
+            try:
+                int(operand)
+            except ValueError:
+                return "Error: Numbers must only contain digits."
+            if len(operand) > 4:
+                return "Error: Numbers cannot be more than four digits."
+        #append problem to problem list  
+        problem_list.append(Problem(i, operands[0], operator, operands[1]))
     
-    #put values into lists
-    for problem in problems:
-        problem_split = problem.split()
-        operand1_l.append(problem_split[0])
-        operator_l.append(problem_split[1])
-        operand2_l.append(problem_split[2])
-        
-    #check operators don't include * or /
-    if "*" in operator_l or "/" in operator_l:
-        return "Error: Operator must be '+' or '-'."
-    
-    #check operands only contain numbers and are no more than 4 digits
-    for operand1 in operand1_l:
-        try:
-            int(operand1)
-        except ValueError:
-            return "Error: Numbers must only contain digits."
-        if len(operand1) > 4:
-            return "Error: Numbers cannot be more than four digits."
-        
-    for operand2 in operand2_l:
-        try:
-            int(operand2)
-        except ValueError:
-            return "Error: Numbers must only contain digits."
-        if len(operand2) > 4:
-            return "Error: Numbers cannot be more than four digits."
-        
-    #get required output length for each problem
-    problem_len_l = []    
-    for i, operand1 in enumerate(operand1_l):
-        if len(operand1) > len(operand2_l[i]):
-            problem_len_l.append(len(operand1) + 2)
-        else:
-            problem_len_l.append(len(operand2_l[i]) + 2)
-            
+       
     #get list of strings for line 1
-    line1_l = []
-    for i, operand1 in enumerate(operand1_l):
-        whitespace_len = problem_len_l[i] - len(operand1)
-        working_list = []
+    line1 = ''
+    for problem in problem_list:
         #preceeding whitespace
-        for ws in range(whitespace_len):
-            working_list.append(' ')
+        for ws in range(problem.line1_ws_len):
+            line1 += ' '
         #operand
-        working_list.append(operand1)
+        line1 += problem.operand1
         #end whitespace
-        working_list.append('    ')
-        line1_l.append(''.join(working_list))
-        
+        line1 += '    '        
     #trim end whitespace on last entry
-    line1_l[len(line1_l) - 1] = line1_l[len(line1_l) - 1].rstrip()
-    line1_l.append('\n')
-    line1 = ''.join(line1_l)
+    line1 = line1[:-4]
+    line1 += '\n'
     
     #get list of strings for line 2
-    line2_l = []
-    for i, operand2 in enumerate(operand2_l):
-        whitespace_len = problem_len_l[i] - len(operand2) - 1
-        working_list = []
+    line2 = ''
+    for problem in problem_list:
         #operator
-        line2_l.append(operator_l[i])
-        #whitespace
-        for ws in range(whitespace_len):
-            working_list.append(' ')
+        line2 += problem.operator
+        #preceeding whitespace
+        for ws in range(problem.line2_ws_len):
+            line2 += ' '
         #operand
-        working_list.append(operand2)
+        line2 += problem.operand2
         #end whitespace
-        working_list.append('    ')
-        line2_l.append(''.join(working_list))
-        
+        line2 += '    '       
     #trim end whitespace on last entry
-    line2_l[len(line2_l) - 1] = line2_l[len(line2_l) - 1].rstrip()
-    line2_l.append('\n')
-    line2 = ''.join(line2_l)
-    
+    line2 = line2[:-4]
+    line2 += '\n'
     
     #get list of strings for line 3
-    line3_l = []
-    for problem_len in problem_len_l:
-        working_list = []
-        #dashes
-        for char in range(problem_len):
-            working_list.append('-')
+    line3 = ''
+    for problem in problem_list:
+        for dash in range(problem.problem_length):
+            line3 += '-'
         #end whitespace
-        working_list.append('    ')
-        line3_l.append(''.join(working_list))
-        
+        line3 += '    '
     #trim end whitespace on last entry
-    line3_l[len(line3_l) - 1] = line3_l[len(line3_l) - 1].rstrip()
+    line3 = line3[:-4]
     if print_answers is True:
-        line3_l.append('\n')
-    line3 = ''.join(line3_l)
-    
-    
-    #get answers list
-    answers_l = []
-    for i, operand1 in enumerate(operand1_l):
-        if operator_l[i] == '+':
-            answer = int(operand1) + int(operand2_l[i])
-        else:
-            answer = int(operand1) - int(operand2_l[i])
-        answers_l.append(str(answer))
+        line3 += '\n'
         
     #get list of strings for line 4
-    line4_l = []
-    for i, answer in enumerate(answers_l):
-        whitespace_len = problem_len_l[i] - len(answer)
-        working_list = []
-        #whitespace
-        for ws in range(whitespace_len):
-            working_list.append(' ')
+    line4 = ''
+    for problem in problem_list:
+        #preceeding whitespace
+        for ws in range(problem.resultline_ws_len):
+            line4 += ' '
         #answer
-        working_list.append(answer)
+        line4 += str(problem.result)
         #end whitespace
-        working_list.append('    ')
-        line4_l.append(''.join(working_list))
-        
+        line4 += '    '
     #trim end whitespace on last entry
-    line4_l[len(line4_l) - 1] = line4_l[len(line4_l) - 1].rstrip()
-    line4 = ''.join(line4_l)
-        
+    line4 = line4[:-4]
+          
     
     #return
     if print_answers is True:
