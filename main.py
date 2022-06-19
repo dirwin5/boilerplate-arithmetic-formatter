@@ -3,7 +3,7 @@ from pytest import main
 
 from arithmetic_arranger import arithmetic_arranger
 
-#print(arithmetic_arranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49"]))
+#print(repr(arithmetic_arranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49"])))
 
 #print(arithmetic_arranger(["32 + 698", "3801 - 2", "45 + 43", "123 + 49", "453 - 235"], True))
 
